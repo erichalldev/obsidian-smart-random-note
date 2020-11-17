@@ -1,0 +1,9 @@
+{
+  "id": "smart-random-note",
+  "name": "Smart Random Note",
+  "version": "0.0.1",
+  "description": "A smart random note plugin",
+  "author": "Eric Hall",
+  "authorUrl": "https://erichall.io",
+  "isDesktopOnly": false
+}
