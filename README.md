@@ -7,6 +7,12 @@ Two commands are available:
 
 ![Screenshot](https://github.com/erichalldev/obsidian-smart-random-note/blob/main/screenshot.gif)
 
+## Future Plans
+- Open a random note given a search string
+- Save search strings
+- Remember which notes have been seen for a given search string. 
+  - Don't show the same note again until all have been seen or a certain amount of time has elapsed.
+
 ## Installation
 
 ### From within Obsidian
