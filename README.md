@@ -1,3 +1,5 @@
+![Downloads](https://img.shields.io/github/downloads/erichalldev/obsidian-smart-random-note/total.svg)
+
 # Smart Random Note Obsidian Plugin
 This plugin enhances opening random notes.
 
