@@ -1,8 +1,9 @@
-import { Notice, Plugin } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { getTagFilesMap, randomElement } from './utilities';
 import { SmartRandomNoteSettingTab } from './settingTab';
 import { SearchView, SmartRandomNoteSettings } from './types';
 import { OpenRandomTaggedNoteModal } from './openRandomTaggedNoteModal';
+import { SmartRandomNoteNotice } from './smartRandomNoteNotice';
 
 export default class SmartRandomNotePlugin extends Plugin {
     settings: SmartRandomNoteSettings = { openInNewLeaf: true, enableRibbonIcon: true };
@@ -63,14 +64,14 @@ export default class SmartRandomNotePlugin extends Plugin {
         const searchView = this.app.workspace.getLeavesOfType('search')[0]?.view as SearchView;
 
         if (!searchView) {
-            new Notice('Smart Random Note: The search plugin is not enabled', 5000);
+            new SmartRandomNoteNotice('The core search plugin is not enabled', 5000);
             return;
         }
 
         const searchResults = searchView.dom.resultDoms.map((x) => x.file.basename);
 
         if (!searchResults.length) {
-            new Notice('Smart Random Note: No search results available', 5000);
+            new SmartRandomNoteNotice('No search results available', 5000);
             return;
         }
 
@@ -87,6 +88,8 @@ export default class SmartRandomNotePlugin extends Plugin {
         if (loadedSettings) {
             this.setOpenInNewLeaf(loadedSettings.openInNewLeaf);
             this.setEnableRibbonIcon(loadedSettings.enableRibbonIcon);
+        } else {
+            this.refreshRibbonIcon();
         }
     };
 
@@ -97,6 +100,11 @@ export default class SmartRandomNotePlugin extends Plugin {
 
     setEnableRibbonIcon = (value: boolean): void => {
         this.settings.enableRibbonIcon = value;
+        this.refreshRibbonIcon();
+        this.saveData(this.settings);
+    };
+
+    refreshRibbonIcon = (): void => {
         this.ribbonIconEl?.remove();
         if (this.settings.enableRibbonIcon) {
             this.ribbonIconEl = this.addRibbonIcon(
@@ -105,6 +113,5 @@ export default class SmartRandomNotePlugin extends Plugin {
                 this.handleOpenRandomNoteFromSearch,
             );
         }
-        this.saveData(this.settings);
     };
 }

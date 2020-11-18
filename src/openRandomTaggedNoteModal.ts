@@ -12,7 +12,7 @@ export class OpenRandomTaggedNoteModal extends Modal {
         this.selectedTag = tags[0];
     }
 
-    onOpen = () => {
+    onOpen = (): void => {
         this.contentEl.createEl('h3', { text: 'Select Tag' });
 
         const tagDropdown = new DropdownComponent(this.contentEl).onChange((value) => (this.selectedTag = value));
