@@ -1,6 +1,10 @@
 # Smart Random Note Obsidian Plugin
 This plugin enhances opening random notes.
 
+Two commands are available:
+- Open a random note
+- Open a random note given a tag
+
 ## Installation
 
 ### From within Obsidian
