@@ -5,7 +5,7 @@ Two commands are available:
 - Open Random Note: behaves similarly to the core random note plugin.
 - Open Tagged Random Note: opens a random note that has a selected tag.
 
-![Screenshot](https://github.com/erichalldev/obsidian-smart-random-note/blob/main/screenshot.gif)
+![Screenshot](https://raw.githubusercontent.com/erichalldev/obsidian-smart-random-note/master/screenshot.gif)
 
 ## Future Plans
 - Open a random note given a search string
