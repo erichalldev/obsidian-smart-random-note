@@ -1,4 +1,16 @@
-import { App, ButtonComponent, DropdownComponent, Modal, Plugin } from 'obsidian';
+import { App, ButtonComponent, DropdownComponent, Modal, Notice, Plugin, TFile, View } from 'obsidian';
+
+interface ResultDOM {
+    file: TFile;
+}
+
+interface SearchDOM {
+    resultDoms: ResultDOM[];
+}
+
+interface SearchView extends View {
+    dom: SearchDOM;
+}
 
 export default class SmartRandomNotePlugin extends Plugin {
     async onload(): Promise<void> {
@@ -14,6 +26,12 @@ export default class SmartRandomNotePlugin extends Plugin {
             id: 'open-tagged-random-note',
             name: 'Open Tagged Random Note',
             callback: this.openTaggedRandomNote,
+        });
+
+        this.addCommand({
+            id: 'open-random-note-from-search',
+            name: 'Open Random Note From Search',
+            callback: this.openRandomNoteFromSearch,
         });
     }
 
@@ -42,6 +60,25 @@ export default class SmartRandomNotePlugin extends Plugin {
         };
 
         modal.open();
+    };
+
+    openRandomNoteFromSearch = async (): Promise<void> => {
+        const searchView = this.app.workspace.getLeavesOfType('search')[0]?.view as SearchView;
+
+        if (!searchView) {
+            new Notice('The search plugin is not enabled', 5000);
+            return;
+        }
+
+        const searchResults = searchView.dom.resultDoms.map((x) => x.file.basename);
+
+        if (!searchResults.length) {
+            new Notice('No search results available', 5000);
+            return;
+        }
+
+        const fileNameToOpen = randomElement(searchResults);
+        await this.app.workspace.openLinkText(fileNameToOpen, '', true, { active: true });
     };
 }
 
