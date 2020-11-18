@@ -1,25 +1,8 @@
-import { App, CachedMetadata, MetadataCache, Modal, Plugin, PluginSettingTab } from 'obsidian';
-
-interface CachedFileData {
-	mtime: number;
-	size: number;
-	hash: string;
-}
-
-interface MyMetadataCache extends MetadataCache {
-	fileCache: { [path: string]: CachedFileData };
-	metadataCache: { [hash: string]: CachedMetadata };
-	getTags(): { [tag: string]: number }
-}
+import { App, ButtonComponent, DropdownComponent, Modal, Plugin } from 'obsidian';
 
 export default class SmartRandomNotePlugin extends Plugin {
-	settings: Settings = new Settings();
-
 	async onload(): Promise<void> {
 		console.log('loading smart-random-note');
-
-		this.settings = await this.loadData() || new Settings();
-		this.addSettingTab(new SmartRandomNoteSettingTab(this.app, this));
 
 		this.addCommand({
 			id: 'open-random-note',
@@ -39,37 +22,20 @@ export default class SmartRandomNotePlugin extends Plugin {
 	}
 	
 	openRandomNote = async (): Promise<void> => {
-		const fileCache = (this.app.metadataCache as MyMetadataCache).fileCache;
+		const markdownFiles = this.app.vault.getMarkdownFiles();
 
-		var fileNames = Object.keys(fileCache);
-		const fileNameToOpen = randomElement(fileNames);
-		await this.app.workspace.openLinkText(fileNameToOpen, '', true, { active: true });
+		var filePaths = markdownFiles.map(x => x.path);
+		const filePathToOpen = randomElement(filePaths);
+		await this.app.workspace.openLinkText(filePathToOpen, '', true, { active: true });
 	};
 
 	openTaggedRandomNote = (): void => {
-		const tags = (this.app.metadataCache as MyMetadataCache).getTags();
+		const tagFilesMap = getTagFilesMap(this.app);
 
-		const modal = new SmartRandomNoteModal(this.app, Object.keys(tags));
+		const tags = Object.keys(tagFilesMap);
+		const modal = new SmartRandomNoteModal(this.app, tags);
 
 		modal.submitCallback = async (): Promise<void> => {
-			const metadataCache = (this.app.metadataCache as MyMetadataCache).metadataCache;
-			const fileCache = (this.app.metadataCache as MyMetadataCache).fileCache;
-
-			const tagFilesMap: { [tag: string]: string[] } = {};
-			for (var fileName in fileCache) {
-				const cachedFileData = fileCache[fileName];
-				const cachedMetadata = metadataCache[cachedFileData.hash];
-				if (cachedMetadata.tags) {
-					for (var cachedTag of cachedMetadata.tags) {
-						if (tagFilesMap[cachedTag.tag]) {
-							tagFilesMap[cachedTag.tag].push(fileName);
-						} else {
-							tagFilesMap[cachedTag.tag] = [fileName];
-						}
-					}
-				}
-			}
-
 			const taggedFiles = tagFilesMap[modal.selectedTag];
 			const fileNameToOpen = randomElement(taggedFiles);
 			await this.app.workspace.openLinkText(fileNameToOpen, '', true, { active: true });
@@ -77,6 +43,30 @@ export default class SmartRandomNotePlugin extends Plugin {
 
 		modal.open();
 	};
+}
+
+type TagFileMap = { [tag: string]: string[] }
+
+function getTagFilesMap(app: App): TagFileMap {
+	const metadataCache = app.metadataCache;
+	const markdownFiles = app.vault.getMarkdownFiles();
+	const tagFilesMap: { [tag: string]: string[] } = {};
+
+	for (var markdownFile of markdownFiles) {
+		const cachedMetadata = metadataCache.getFileCache(markdownFile);
+		
+		if (cachedMetadata && cachedMetadata.tags) {
+			for (var cachedTag of cachedMetadata.tags) {
+				if (tagFilesMap[cachedTag.tag]) {
+					tagFilesMap[cachedTag.tag].push(markdownFile.path);
+				} else {
+					tagFilesMap[cachedTag.tag] = [markdownFile.path];
+				}
+			}
+		}
+	}
+
+	return tagFilesMap;
 }
 
 function randomElement<T>(array: T[]): T {
@@ -97,23 +87,20 @@ class SmartRandomNoteModal extends Modal {
 
 	onOpen = () => {
 		this.contentEl.createEl('h3', { text: 'Select Tag' });
-		const tagDropdown = this.contentEl.createEl('select');
-		tagDropdown.id = 'srn-tag-dropdown';
-		tagDropdown.addClass('dropdown')
+
+		const tagDropdown = new DropdownComponent(this.contentEl)
+			.onChange(value => this.selectedTag = value);
 
 		for (var tag of this.tags) {
-			const tagOption = tagDropdown.createEl('option');
-			tagOption.value = tag;
-			tagOption.text = tag;
+			tagDropdown.addOption(tag, tag);
 		}
 
-		tagDropdown.addEventListener('change', _ => {
-			this.selectedTag = tagDropdown.value;
-		});
+		tagDropdown.setValue(this.selectedTag);
 
-		const submitButton = this.contentEl.createEl('button', { text: 'Submit' });
-		submitButton.addClass('mod-cta');
-		submitButton.addEventListener('click', this.submit);
+		new ButtonComponent(this.contentEl)
+			.setButtonText('Submit')
+			.setCta()
+			.onClick(this.submit);
 
 		document.addEventListener('keyup', this.handleKeyUp);
 	};
@@ -135,22 +122,4 @@ class SmartRandomNoteModal extends Modal {
 	onClose = (): void => {
 		document.removeEventListener('keyup', this.handleKeyUp);
 	};
-}
-
-class Settings {
-}
-
-class SmartRandomNoteSettingTab extends PluginSettingTab {
-	plugin: SmartRandomNotePlugin;
-
-	constructor(app: App, plugin: SmartRandomNotePlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		let { containerEl } = this;
-
-		containerEl.empty();
-	}
 }
