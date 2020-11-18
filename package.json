@@ -1,6 +1,6 @@
 {
   "name": "smart-random-note",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A smart random note plugin for Obsidian (https://obsidian.md)",
   "main": "main.js",
   "scripts": {
