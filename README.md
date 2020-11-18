@@ -5,6 +5,8 @@ Two commands are available:
 - Open a random note
 - Open a random note given a tag
 
+![Screenshot](https://github.com/erichalldev/obsidian-smart-random-note/blob/main/screenshot.gif)
+
 ## Installation
 
 ### From within Obsidian
