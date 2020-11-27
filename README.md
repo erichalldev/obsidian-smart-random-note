@@ -38,6 +38,10 @@ Custom plugins are officially supported in Obsidian version 0.9.7. This plugin c
 
 ## Version History
 
+### 0.1.3
+
+-   Fix broken open random note from search command
+
 ### 0.1.2
 
 -   Add support for frontmatter tags introduced in Obsidian 0.9.16
