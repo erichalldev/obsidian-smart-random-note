@@ -1,48 +1,24 @@
-import { App, ButtonComponent, DropdownComponent, Modal } from 'obsidian';
+import { App, Modal } from 'obsidian';
+import OpenRandomTaggedNoteModalView from './OpenRandomTaggedNoteModalView.svelte';
 
 export class OpenRandomTaggedNoteModal extends Modal {
+    view: OpenRandomTaggedNoteModalView;
     tags: string[];
-    selectedTag = '';
-    firstKeyUpHandled = false;
-    submitCallback: (() => Promise<void>) | undefined = undefined;
+    submitCallback: ((selectedTag: string) => Promise<void>) | undefined = undefined;
 
     constructor(app: App, tags: string[]) {
         super(app);
         this.tags = tags;
-        this.selectedTag = tags[0];
+        this.view = new OpenRandomTaggedNoteModalView({
+            target: this.contentEl,
+            props: { tags, handleSubmit: this.handleSubmit },
+        });
     }
 
-    onOpen = (): void => {
-        this.contentEl.createEl('h3', { text: 'Select Tag' });
-
-        const tagDropdown = new DropdownComponent(this.contentEl).onChange((value) => (this.selectedTag = value));
-
-        for (const tag of this.tags) {
-            tagDropdown.addOption(tag, tag);
-        }
-
-        tagDropdown.setValue(this.selectedTag);
-
-        new ButtonComponent(this.contentEl).setButtonText('Submit').setCta().onClick(this.submit);
-
-        document.addEventListener('keyup', this.handleKeyUp);
-    };
-
-    handleKeyUp = (event: KeyboardEvent): void => {
-        if (this.firstKeyUpHandled && event.key == 'Enter') {
-            this.submit();
-        }
-        this.firstKeyUpHandled = true;
-    };
-
-    submit = async (): Promise<void> => {
+    handleSubmit = (tag: string): void => {
         if (this.submitCallback) {
-            await this.submitCallback();
+            this.submitCallback(tag);
         }
         this.close();
-    };
-
-    onClose = (): void => {
-        document.removeEventListener('keyup', this.handleKeyUp);
     };
 }
