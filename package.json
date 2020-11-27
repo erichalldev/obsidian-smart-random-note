@@ -6,23 +6,28 @@
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
     "build": "rollup --config rollup.config.js",
-    "lint": "eslint ./**/*.{js,ts} --quiet --fix"
+    "lint": "svelte-check && eslint ./**/*.{js,ts} --quiet --fix"
   },
   "keywords": [],
   "author": "",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^15.1.0",
-    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
-    "@types/node": "^14.14.7",
-    "@typescript-eslint/eslint-plugin": "^4.8.1",
-    "@typescript-eslint/parser": "^4.8.1",
+    "@tsconfig/svelte": "^1.0.10",
+    "@types/node": "^14.14.10",
+    "@typescript-eslint/eslint-plugin": "^4.8.2",
+    "@typescript-eslint/parser": "^4.8.2",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
     "obsidian": "https://github.com/obsidianmd/obsidian-api/tarball/master",
     "prettier": "^2.1.2",
     "rollup": "^2.33.2",
+    "rollup-plugin-svelte": "^7.0.0",
+    "svelte": "^3.30.0",
+    "svelte-check": "^1.1.17",
+    "svelte-preprocess": "^4.6.1",
     "tslib": "^2.0.3",
     "typescript": "^4.0.3"
   }
