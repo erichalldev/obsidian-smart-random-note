@@ -40,7 +40,7 @@ Custom plugins are officially supported in Obsidian version 0.9.7. This plugin c
 
 ### 0.1.3
 
--   Fix broken open random note from search command
+-   Fix broken open random note from search command in Obsidian 0.9.18
 
 ### 0.1.2
 
