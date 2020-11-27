@@ -1,6 +1,8 @@
+import svelte from 'rollup-plugin-svelte';
 import typescript from '@rollup/plugin-typescript';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
+import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import autoPreprocess from 'svelte-preprocess';
 
 export default {
     input: 'src/main.ts',
@@ -11,5 +13,10 @@ export default {
         exports: 'default',
     },
     external: ['obsidian'],
-    plugins: [typescript(), nodeResolve({ browser: true }), commonjs()],
+    plugins: [
+        svelte({ preprocess: autoPreprocess() }),
+        typescript({ sourceMap: true }),
+        resolve({ browser: true, dedupe: ['svelte'] }),
+        commonjs({ include: 'node_modules/**' }),
+    ],
 };

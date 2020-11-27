@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "types": ["node", "svelte"],
     "baseUrl": ".",
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
-    "target": "es5",
+    "target": "es6",
     "allowJs": false,
     "strict": true,
     "noUnusedLocals": true,

@@ -1,4 +1,4 @@
-import { App } from 'obsidian';
+import { App, CachedMetadata } from 'obsidian';
 import { TagFilesMap } from './types';
 
 export function getTagFilesMap(app: App): TagFilesMap {
@@ -10,18 +10,31 @@ export function getTagFilesMap(app: App): TagFilesMap {
     for (const markdownFile of markdownFiles) {
         const cachedMetadata = metadataCache.getFileCache(markdownFile);
 
-        if (cachedMetadata && cachedMetadata.tags) {
-            for (const cachedTag of cachedMetadata.tags) {
-                if (tagFilesMap[cachedTag.tag]) {
-                    tagFilesMap[cachedTag.tag].push(markdownFile.path);
-                } else {
-                    tagFilesMap[cachedTag.tag] = [markdownFile.path];
+        if (cachedMetadata) {
+            const cachedTags = getCachedTags(cachedMetadata);
+            if (cachedTags.length) {
+                for (const cachedTag of cachedTags) {
+                    if (tagFilesMap[cachedTag]) {
+                        tagFilesMap[cachedTag].push(markdownFile.path);
+                    } else {
+                        tagFilesMap[cachedTag] = [markdownFile.path];
+                    }
                 }
             }
         }
     }
 
     return tagFilesMap;
+}
+
+function getCachedTags(cachedMetadata: CachedMetadata): string[] {
+    const bodyTags: string[] = cachedMetadata.tags?.map((x) => x.tag) || [];
+    const frontMatterTags: string[] = cachedMetadata.frontmatter?.tags || [];
+
+    // frontmatter tags might not have a hashtag in front of them
+    const cachedTags = bodyTags.concat(frontMatterTags).map((x) => (x.startsWith('#') ? x : '#' + x));
+
+    return cachedTags;
 }
 
 export function randomElement<T>(array: T[]): T {

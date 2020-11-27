@@ -2,8 +2,8 @@ import { Plugin } from 'obsidian';
 import { getTagFilesMap, randomElement } from './utilities';
 import { SmartRandomNoteSettingTab } from './settingTab';
 import { SearchView, SmartRandomNoteSettings } from './types';
-import { OpenRandomTaggedNoteModal } from './openRandomTaggedNoteModal';
 import { SmartRandomNoteNotice } from './smartRandomNoteNotice';
+import { OpenRandomTaggedNoteModal } from './openRandomTaggedNoteModal';
 
 export default class SmartRandomNotePlugin extends Plugin {
     settings: SmartRandomNoteSettings = { openInNewLeaf: true, enableRibbonIcon: true };
@@ -52,8 +52,8 @@ export default class SmartRandomNotePlugin extends Plugin {
         const tags = Object.keys(tagFilesMap);
         const modal = new OpenRandomTaggedNoteModal(this.app, tags);
 
-        modal.submitCallback = async (): Promise<void> => {
-            const taggedFiles = tagFilesMap[modal.selectedTag];
+        modal.submitCallback = async (selectedTag: string): Promise<void> => {
+            const taggedFiles = tagFilesMap[selectedTag];
             await this.openRandomNote(taggedFiles);
         };
 
