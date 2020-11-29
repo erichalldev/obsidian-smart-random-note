@@ -6,12 +6,12 @@ export class OpenRandomTaggedNoteModal extends Modal {
     tags: string[];
     submitCallback: ((selectedTag: string) => Promise<void>) | undefined = undefined;
 
-    constructor(app: App, tags: string[]) {
+    constructor(app: App, tags: string[], lastSelectedTag?: string) {
         super(app);
         this.tags = tags;
         this.view = new OpenRandomTaggedNoteModalView({
             target: this.contentEl,
-            props: { tags, handleSubmit: this.handleSubmit },
+            props: { tags, initialSelectedTag: lastSelectedTag, handleSubmit: this.handleSubmit },
         });
     }
 

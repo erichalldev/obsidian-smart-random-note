@@ -13,4 +13,5 @@ export interface SearchView extends View {
 export interface SmartRandomNoteSettings {
     openInNewLeaf: boolean;
     enableRibbonIcon: boolean;
+    lastSelectedTag?: string;
 }

@@ -1,5 +1,5 @@
 import { Plugin } from 'obsidian';
-import { getTagFilesMap, randomElement } from './utilities';
+import { getOrphanedFiles, getTagFilesMap, randomElement } from './utilities';
 import { SmartRandomNoteSettingTab } from './settingTab';
 import { SearchView, SmartRandomNoteSettings } from './types';
 import { SmartRandomNoteNotice } from './smartRandomNoteNotice';
@@ -33,6 +33,12 @@ export default class SmartRandomNotePlugin extends Plugin {
             name: 'Open Random Note from Search',
             callback: this.handleOpenRandomNoteFromSearch,
         });
+
+        this.addCommand({
+            id: 'open-random-orphan-note',
+            name: 'Open Random Orphan Note',
+            callback: this.handleOpenRandomOrphanNote,
+        });
     }
 
     onunload = (): void => {
@@ -49,12 +55,13 @@ export default class SmartRandomNotePlugin extends Plugin {
     handleOpenTaggedRandomNote = (): void => {
         const tagFilesMap = getTagFilesMap(this.app);
 
-        const tags = Object.keys(tagFilesMap);
-        const modal = new OpenRandomTaggedNoteModal(this.app, tags);
+        const tags = Object.keys(tagFilesMap).sort();
+        const modal = new OpenRandomTaggedNoteModal(this.app, tags, this.settings.lastSelectedTag);
 
         modal.submitCallback = async (selectedTag: string): Promise<void> => {
             const taggedFiles = tagFilesMap[selectedTag];
             await this.openRandomNote(taggedFiles);
+            this.setLastSelectedTag(selectedTag);
         };
 
         modal.open();
@@ -68,19 +75,25 @@ export default class SmartRandomNotePlugin extends Plugin {
             return;
         }
 
-        const searchResults = searchView.dom.getFiles().map((x) => x.basename);
+        const searchResultPaths = searchView.dom.getFiles().map((x) => x.path);
 
-        if (!searchResults.length) {
-            new SmartRandomNoteNotice('No search results available', 5000);
-            return;
-        }
+        await this.openRandomNote(searchResultPaths);
+    };
 
-        await this.openRandomNote(searchResults);
+    handleOpenRandomOrphanNote = (): void => {
+        const orphanedFiles = getOrphanedFiles(this.app);
+
+        const filePaths = orphanedFiles.map((x) => x.path);
+        this.openRandomNote(filePaths);
     };
 
     openRandomNote = async (filePaths: string[]): Promise<void> => {
-        const filePathToOpen = randomElement(filePaths);
-        await this.app.workspace.openLinkText(filePathToOpen, '', this.settings.openInNewLeaf, { active: true });
+        if (filePaths.length) {
+            const filePathToOpen = randomElement(filePaths);
+            await this.app.workspace.openLinkText(filePathToOpen, '', this.settings.openInNewLeaf, { active: true });
+        } else {
+            new SmartRandomNoteNotice('No files to choose from', 5000);
+        }
     };
 
     loadSettings = async (): Promise<void> => {
@@ -88,6 +101,7 @@ export default class SmartRandomNotePlugin extends Plugin {
         if (loadedSettings) {
             this.setOpenInNewLeaf(loadedSettings.openInNewLeaf);
             this.setEnableRibbonIcon(loadedSettings.enableRibbonIcon);
+            this.setLastSelectedTag(loadedSettings.lastSelectedTag);
         } else {
             this.refreshRibbonIcon();
         }
@@ -101,6 +115,11 @@ export default class SmartRandomNotePlugin extends Plugin {
     setEnableRibbonIcon = (value: boolean): void => {
         this.settings.enableRibbonIcon = value;
         this.refreshRibbonIcon();
+        this.saveData(this.settings);
+    };
+
+    setLastSelectedTag = (value?: string | undefined): void => {
+        this.settings.lastSelectedTag = value;
         this.saveData(this.settings);
     };
 
