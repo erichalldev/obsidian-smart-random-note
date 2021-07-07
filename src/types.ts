@@ -1,6 +1,6 @@
 import { TFile, View } from 'obsidian';
 
-export type TagFilesMap = { [tag: string]: string[] };
+export type TagFilesMap = { [tag: string]: TFile[] };
 
 export interface SearchDOM {
     getFiles(): TFile[];

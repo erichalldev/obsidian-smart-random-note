@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { Plugin, TFile } from 'obsidian';
 import { getTagFilesMap, randomElement } from './utilities';
 import { SmartRandomNoteSettingTab } from './settingTab';
 import { SearchView, SmartRandomNoteSettings } from './types';
@@ -42,8 +42,7 @@ export default class SmartRandomNotePlugin extends Plugin {
     handleOpenRandomNote = async (): Promise<void> => {
         const markdownFiles = this.app.vault.getMarkdownFiles();
 
-        const filePaths = markdownFiles.map((x) => x.path);
-        this.openRandomNote(filePaths);
+        this.openRandomNote(markdownFiles);
     };
 
     handleOpenTaggedRandomNote = (): void => {
@@ -68,7 +67,7 @@ export default class SmartRandomNotePlugin extends Plugin {
             return;
         }
 
-        const searchResults = searchView.dom.getFiles().map((x) => x.basename);
+        const searchResults = searchView.dom.getFiles();
 
         if (!searchResults.length) {
             new SmartRandomNoteNotice('No search results available', 5000);
@@ -78,9 +77,18 @@ export default class SmartRandomNotePlugin extends Plugin {
         await this.openRandomNote(searchResults);
     };
 
-    openRandomNote = async (filePaths: string[]): Promise<void> => {
-        const filePathToOpen = randomElement(filePaths);
-        await this.app.workspace.openLinkText(filePathToOpen, '', this.settings.openInNewLeaf, { active: true });
+    openRandomNote = async (files: TFile[]): Promise<void> => {
+        const markdownFiles = files.filter((file) => file.extension === 'md');
+
+        if (!markdownFiles.length) {
+            new SmartRandomNoteNotice("Can't open note. No markdown files found in search results", 5000);
+            return;
+        }
+
+        const fileToOpen = randomElement(markdownFiles);
+        await this.app.workspace.openLinkText(fileToOpen.basename, '', this.settings.openInNewLeaf, {
+            active: true,
+        });
     };
 
     loadSettings = async (): Promise<void> => {

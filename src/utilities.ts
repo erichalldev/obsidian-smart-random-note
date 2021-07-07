@@ -15,9 +15,9 @@ export function getTagFilesMap(app: App): TagFilesMap {
             if (cachedTags.length) {
                 for (const cachedTag of cachedTags) {
                     if (tagFilesMap[cachedTag]) {
-                        tagFilesMap[cachedTag].push(markdownFile.path);
+                        tagFilesMap[cachedTag].push(markdownFile);
                     } else {
-                        tagFilesMap[cachedTag] = [markdownFile.path];
+                        tagFilesMap[cachedTag] = [markdownFile];
                     }
                 }
             }
