@@ -40,7 +40,7 @@ Custom plugins are officially supported in Obsidian version 0.9.7. This plugin c
 
 ## Version History
 
-### 0.2.0
+### 0.2.1
 
 -   Add command to insert a link at the cursor to a random note from search
 -   Fix opening a new markdown note when an image was selected to open. Opening any files except markdown is not supported.
