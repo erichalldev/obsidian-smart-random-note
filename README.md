@@ -7,6 +7,7 @@ This plugin enhances opening random notes.
 Three commands are available:
 
 -   Open Random Note from Search: opens a random note from the list of search results.
+-   Insert Link at Cursor to Random Note from Search: inserts a link where the cursor is positioned to a raondom note from the list of search results.
 -   Open Tagged Random Note: opens a random note that has a selected tag.
 -   Open Random Note: behaves similarly to the core random note plugin.
 
@@ -14,10 +15,11 @@ Three commands are available:
 
 ## Future Plans
 
--   Remember which notes have been seen for a given search string.
-    -   Don't show the same note again until all have been seen or a certain amount of time has elapsed.
--   Implement spaced repetition capabilities.
-    -   This is intentionally vague for now.
+-   Originally I had plans to implement spaced repetition capabilities, but other plugins have been developed that handle that domain well. They are:
+    -   [Flashcards](https://github.com/reuseman/flashcards-obsidian)
+    -   [Spaced Repetition](https://github.com/st3v3nmw/obsidian-spaced-repetition)
+    -   [Recall](https://github.com/martin-jw/obsidian-recall)
+-   I'd like to stay as close as possible to the Unix adage "do one thing, and do it well" with this plugin. Therefore any features and improvements must stay close to its core function: opening random notes with greater control.
 
 ## Installation
 
@@ -37,6 +39,11 @@ From Obsidian 0.9.8, you can activate this plugin within Obsidian by doing the f
 Custom plugins are officially supported in Obsidian version 0.9.7. This plugin currently targets API version 0.9.15 but should be compatible with version 0.9.7 or higher.
 
 ## Version History
+
+### 0.2.0
+
+-   Add command to insert a link at the cursor to a random note from search
+-   Fix opening a new markdown note when an image was selected to open. Opening any files except markdown is not supported.
 
 ### 0.1.3
 
