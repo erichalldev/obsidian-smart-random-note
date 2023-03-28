@@ -10,7 +10,7 @@ export default class SmartRandomNotePlugin extends Plugin {
     ribbonIconEl: HTMLElement | undefined = undefined;
 
     async onload(): Promise<void> {
-        console.log('loading smart-random-note');
+        console.log('loading selendrip');
 
         await this.loadSettings();
 
@@ -42,7 +42,7 @@ export default class SmartRandomNotePlugin extends Plugin {
     }
 
     onunload = (): void => {
-        console.log('unloading smart-random-note');
+        console.log('unloading selendrip');
     };
 
     handleOpenRandomNote = async (): Promise<void> => {
